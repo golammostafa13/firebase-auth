@@ -30,16 +30,13 @@ function App() {
     })
   };
   const userSignedOut = () =>{
-    firebase.auth().signInWithPopup(provider)
-    .then(res => {
-      const user = {
-        isSignedIn: false,
-        name: '',
-        email: '',
-        photo: ''
-      }
-      setUser(user);
-    })
+    const user = {
+      isSignedIn: false,
+      name: '',
+      email: '',
+      photo: ''
+    }
+    setUser(user);
   };
   return (
     <div className="App">
@@ -47,11 +44,13 @@ function App() {
       <button onClick = {userSignedOut}>Sign Out</button> 
       : <button onClick = {userSignedIn}>Sign In</button>
     }
-    <div>
-      <p>{user.name}</p>
-      <p>{user.email}</p>
-      <img src={user.photo} alt=""/>
-    </div>
+    {user.isSignedIn && 
+      <div>
+        <p>{user.name}</p>
+        <p>{user.email}</p>
+        <img src={user.photo} alt=""/>
+      </div>
+    }
     </div>
   );
 }
