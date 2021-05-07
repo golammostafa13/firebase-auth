@@ -1,56 +1,56 @@
+import firebase from "firebase/app";
+import "firebase/auth";
+import { useState } from "react";
 import './App.css';
 import firebaseConfig from './components/FirebaseConfig/FirebaseConfig';
-import "firebase/auth";
-import firebase from "firebase/app";
-import { useState } from 'react';
 
 firebase.initializeApp(firebaseConfig);
-const  provider = new firebase.auth.GoogleAuthProvider();
+
 function App() {
+  const provider = new firebase.auth.GoogleAuthProvider();
   const [user, setUser] = useState({
-    isSignedIn: false,
     name: '',
     email: '',
-    photo: ''
-  });
-  const userSignedIn = () =>{
+    photoURL: '',
+    isSignedIn: false
+  })
+  const handleSignIn = () =>{
     firebase.auth().signInWithPopup(provider)
-    .then(res => {
-      const {displayName, email, photoURL} = res.user;
-       const user = {
-         isSignedIn: true,
-         name: displayName,
-         email: email,
-         photo: photoURL,
-       };
-       setUser(user);
+    .then((res)=>{
+      const {displayName, photoURL, email} = res.user;
+      const newUser = {
+        name: displayName,
+        email,
+        photoURL,
+        isSignedIn: true
+      }
+      .catch((err)=>{
+        console.log(err.message);
       })
-    .catch(err => {
-      console.log(err.message);
+      setUser(newUser);
     })
-  };
-  const userSignedOut = () =>{
-    const user = {
-      isSignedIn: false,
+  }
+  const handleSignOut = () =>{
+    const newUser = {
       name: '',
       email: '',
-      photo: ''
-    }
-    setUser(user);
-  };
+      photoURL: '',
+      isSignedIn: false
+    };
+    setUser(newUser);
+  }
   return (
     <div className="App">
-    {user.isSignedIn ? 
-      <button onClick = {userSignedOut}>Sign Out</button> 
-      : <button onClick = {userSignedIn}>Sign In</button>
-    }
-    {user.isSignedIn && 
+      { user.isSignedIn ?
+        <button onClick={handleSignOut}>Sign Out</button> : <button onClick={handleSignIn}>Sign In</button>
+      }
+      {user.isSignedIn && 
       <div>
-        <p>{user.name}</p>
-        <p>{user.email}</p>
-        <img src={user.photo} alt=""/>
+        <p>Welcome: {user.name}</p>
+        <p>Your email: {user.email}</p>
+        <img src={user.photoURL} alt=""></img>
       </div>
-    }
+      }
     </div>
   );
 }
